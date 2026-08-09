@@ -109,11 +109,12 @@ def main():
     flat_c = [{"k": r["kit_id"], "t": r["title"], "b": r["bushings"], "c": r["category"]}
               for r in kept]
 
-    rev = defaultdict(set)
+    rev = defaultdict(list)
     for r in designs_c:
         for b in r["b"]:
-            rev[b].add(r["d"])
-    reverse_c = [{"b": b, "designs": sorted(ds)} for b, ds in sorted(rev.items())]
+            rev[b].append({"d": r["d"], "s": r["s"]})
+    reverse_c = [{"b": b, "designs": sorted(ds, key=lambda d: d["d"].lower())}
+                 for b, ds in sorted(rev.items())]
 
     COMPACT_PATH.write_text(json.dumps({
         "designs": designs_c, "flat": flat_c, "reverse": reverse_c,

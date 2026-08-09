@@ -227,7 +227,7 @@ h1 {
 .downloads a:hover { color: var(--brass-strong); border-color: var(--brass); }
 
 .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; margin-top: 16px; }
-table { width: 100%; border-collapse: collapse; font-size: 13.8px; }
+table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13.8px; }
 thead th {
   text-align: left;
   font-size: 11.5px;
@@ -238,15 +238,18 @@ thead th {
   padding: 10px 14px;
   background: var(--surface-alt);
   border-bottom: 1px solid var(--line);
-  position: sticky;
-  top: 61px;
 }
-tbody tr { background: var(--surface); border-bottom: 1px solid var(--line); }
+tbody tr { background: var(--surface); }
 tbody tr:nth-child(even) { background: var(--surface-alt); }
-tbody tr:last-child { border-bottom: none; }
-td { padding: 9px 14px; vertical-align: top; }
+td { padding: 9px 14px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tbody tr:last-child td { border-bottom: none; }
 td.name { color: var(--ink); font-weight: 500; }
 td.skus { color: var(--ink-dim); }
+.sku-inline {
+  font-family: ui-monospace, "SF Mono", Consolas, monospace;
+  font-size: 0.86em;
+  color: var(--ink-dim);
+}
 .sku-count {
   display: inline-block;
   font-family: ui-monospace, "SF Mono", Consolas, monospace;
@@ -333,7 +336,6 @@ footer.page-foot {
 }
 @media (max-width: 640px) {
   .stat-strip { grid-template-columns: repeat(2, 1fr); }
-  thead th { position: static; }
 }
 </style>
 </head>
@@ -435,9 +437,10 @@ const views = {
     rows: () => DATA.reverse,
     render: r => `
       <td class="name mono">${r.b}</td>
-      <td>${r.designs.join(', ')}</td>
+      <td>${r.designs.map(d => `${d.d}${d.s && d.s.length ? ` <span class="sku-inline">(${d.s.join(', ')})</span>` : ''}`).join(', ')}</td>
     `,
-    match: (r, q) => r.b.toLowerCase().includes(q) || r.designs.some(d => d.toLowerCase().includes(q)),
+    match: (r, q) => r.b.toLowerCase().includes(q) ||
+      r.designs.some(d => d.d.toLowerCase().includes(q) || d.s.some(s => s.toLowerCase().includes(q))),
   },
 };
 
