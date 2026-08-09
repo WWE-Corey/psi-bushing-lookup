@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parent.parent
 RAW_PATH = ROOT / "data" / "scraped_raw.json"
 FINAL_PATH = ROOT / "data" / "final_data.json"
 COMPACT_PATH = ROOT / "data" / "compact_data.json"
-OUTPUT_DIR = ROOT / "output"
+OUTPUT_DIR = ROOT / "docs"
 
 BUNDLE_RE = re.compile(r"Starter Set|Variety (Set|Pack)|Combo Pack|Bundle|Bulk Pack", re.I)
 

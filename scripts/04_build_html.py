@@ -1,14 +1,15 @@
 """
 Step 4 of the pipeline: build the standalone, self-contained reference page
-from data/compact_data.json. Writes output/index.html, which can be opened
-directly in a browser or served as-is (e.g. via GitHub Pages).
+from data/compact_data.json. Writes docs/index.html, which can be opened
+directly in a browser or served as-is (docs/ is also what GitHub Pages
+serves this repo from).
 """
 import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 COMPACT_PATH = ROOT / "data" / "compact_data.json"
-OUT_PATH = ROOT / "output" / "index.html"
+OUT_PATH = ROOT / "docs" / "index.html"
 
 data_json = COMPACT_PATH.read_text()
 
