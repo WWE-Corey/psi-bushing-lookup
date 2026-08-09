@@ -14,6 +14,7 @@ import re
 import json
 import time
 import urllib.request
+from datetime import datetime, timezone
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -67,7 +68,8 @@ def main():
 
     print(f"done in {time.time()-t0:.0f}s. ok={len(results)} errors={len(errors)}")
 
-    OUT_PATH.write_text(json.dumps({"results": results, "errors": errors}))
+    scraped_at = datetime.now(timezone.utc).date().isoformat()
+    OUT_PATH.write_text(json.dumps({"scraped_at": scraped_at, "results": results, "errors": errors}))
     print(f"wrote {OUT_PATH}")
 
     no_bushing = [r for r in results if not r["bushings"]]

@@ -384,12 +384,12 @@ footer.page-foot {
       <p><strong>Source:</strong> live-scraped from every product page under pennstateind.com's pen-kits category (each page's own "Bushings Needed" field is authoritative here, not the printed Bushing Book).</p>
       <p><strong>"By Kit Design" grouping:</strong> the raw SKU list includes one page per color/finish variant of the same physical kit (e.g. Chrome, Gun Metal, Antique Brass). Starter-set/variety-pack/bundle SKUs and one mislabeled bushing-set product (<code>PKOLIVEBU</code>) are excluded first. The remaining individual kit SKUs are grouped into designs by stripping known finish/plating words (Chrome, Gun Metal, Antique Brass, 24kt Gold, Satin Nickel, etc.) from the title and grouping by the remaining name + bushing set. This is a best-effort heuristic against inconsistent title formatting &mdash; if you need certainty for a specific kit, cross-check it in the "By Exact SKU" view, which does no grouping at all.</p>
       <p><strong>"Not listed by PSI":</strong> these kits have no "Bushings Needed" field on their own product page at all &mdash; not a scraping gap, confirmed by direct inspection. Rather than guess, they're flagged as-is.</p>
-      <p>See <code>README.md</code> for how to re-run the scrape and regenerate this page.</p>
+      <p>See the <a href="https://github.com/WWE-Corey/psi-bushing-lookup#readme">README</a> for how to re-run the scrape and regenerate this page.</p>
     </div>
   </details>
 
   <footer class="page-foot">
-    Personal woodturning reference &mdash; not affiliated with Penn State Industries. See README for data capture date.
+    Personal woodturning reference &mdash; not affiliated with Penn State Industries. Data last refreshed <span id="scraped-at">&mdash;</span>. Source &amp; methodology on <a href="https://github.com/WWE-Corey/psi-bushing-lookup">GitHub</a>.
   </footer>
 </div>
 
@@ -403,6 +403,12 @@ document.getElementById('stat-designs').textContent = DATA.designs.length;
 document.getElementById('stat-skus').textContent = DATA.flat.length;
 document.getElementById('stat-bushings').textContent = DATA.reverse.length;
 document.getElementById('stat-flagged').textContent = DATA.designs.filter(r => !r.b || r.b.length === 0).length;
+
+if (DATA.scraped_at) {
+  const d = new Date(DATA.scraped_at + 'T00:00:00Z');
+  document.getElementById('scraped-at').textContent = isNaN(d) ? DATA.scraped_at :
+    d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+}
 
 function bushingCell(ids) {
   if (!ids || ids.length === 0) return '<span class="flag">Not listed by PSI</span>';

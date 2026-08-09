@@ -60,7 +60,9 @@ def clean_design_name(title):
 
 
 def main():
-    raw = json.loads(RAW_PATH.read_text())["results"]
+    raw_data = json.loads(RAW_PATH.read_text())
+    raw = raw_data["results"]
+    scraped_at = raw_data.get("scraped_at")
 
     kept, excluded_bundle, excluded_mislabeled = [], [], []
     for r in raw:
@@ -95,6 +97,7 @@ def main():
     print(f"design-level rows: {len(design_rows)}")
 
     FINAL_PATH.write_text(json.dumps({
+        "scraped_at": scraped_at,
         "flat_skus": kept,
         "designs": design_rows,
         "excluded_bundle_count": len(excluded_bundle),
@@ -117,6 +120,7 @@ def main():
                  for b, ds in sorted(rev.items())]
 
     COMPACT_PATH.write_text(json.dumps({
+        "scraped_at": scraped_at,
         "designs": designs_c, "flat": flat_c, "reverse": reverse_c,
         "excluded_bundle_count": len(excluded_bundle),
         "excluded_bundle": [{"kit_id": r["kit_id"], "title": r["title"]} for r in excluded_bundle],
