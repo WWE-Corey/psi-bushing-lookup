@@ -1,5 +1,5 @@
 """
-Step 4 of the pipeline: build the standalone, self-contained reference page
+Step 5 of the pipeline: build the standalone, self-contained reference page
 from data/compact_data.json. Writes docs/index.html, which can be opened
 directly in a browser or served as-is (docs/ is also what GitHub Pages
 serves this repo from).
@@ -18,7 +18,7 @@ html = r'''<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pen Kit &rarr; Bushing Cross-Reference</title>
+<title>Pen Kit &rarr; Bushing, Drill &amp; Tube Reference</title>
 <style>
 :root {
   --bg: #E7E3D6;
@@ -96,8 +96,8 @@ a { color: var(--focus); }
 
 header.hero {
   border-bottom: 1px solid var(--line);
-  padding: 44px 0 28px;
-  margin-bottom: 28px;
+  padding: 37px 0 24px;
+  margin-bottom: 24px;
 }
 .eyebrow {
   font-size: 12px;
@@ -107,14 +107,14 @@ header.hero {
   color: var(--brass);
 }
 h1 {
-  font-size: clamp(28px, 4vw, 40px);
-  margin-top: 8px;
+  font-size: clamp(24px, 3.4vw, 34px);
+  margin-top: 7px;
   color: var(--ink);
 }
 .dek {
   color: var(--ink-dim);
   max-width: 62ch;
-  margin-top: 12px;
+  margin-top: 10px;
   font-size: 15.5px;
 }
 .dek code {
@@ -131,18 +131,18 @@ h1 {
   gap: 1px;
   background: var(--line);
   border: 1px solid var(--line);
-  margin-top: 26px;
+  margin-top: 22px;
   border-radius: 2px;
   overflow: hidden;
 }
 .stat {
   background: var(--surface);
-  padding: 14px 16px;
+  padding: 12px 14px;
 }
 .stat .n {
   font-family: ui-monospace, "SF Mono", Consolas, monospace;
   font-variant-numeric: tabular-nums;
-  font-size: 24px;
+  font-size: 21px;
   font-weight: 600;
   color: var(--brass);
   display: block;
@@ -169,6 +169,7 @@ h1 {
 }
 .tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 2px;
   background: var(--surface-alt);
   padding: 3px;
@@ -226,7 +227,14 @@ h1 {
 }
 .downloads a:hover { color: var(--brass-strong); border-color: var(--brass); }
 
-.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; margin-top: 16px; }
+.table-wrap {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 70vh;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  margin-top: 16px;
+}
 table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13.8px; }
 thead th {
   text-align: left;
@@ -238,6 +246,9 @@ thead th {
   padding: 10px 14px;
   background: var(--surface-alt);
   border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 tbody tr { background: var(--surface); }
 tbody tr:nth-child(even) { background: var(--surface-alt); }
@@ -343,8 +354,8 @@ footer.page-foot {
 <div class="wrap">
   <header class="hero">
     <div class="eyebrow">Woodturning reference &middot; pennstateind.com</div>
-    <h1>Pen Kit &rarr; Bushing Cross-Reference</h1>
-    <p class="dek">Every current Penn State Industries pen/pencil kit, matched to the bushing set it turns against &mdash; built by scraping all live product pages directly (the official Bushing Book PDF is out of date and missing kits, e.g. <code>PKJ316CH</code>).</p>
+    <h1>Pen Kit &rarr; Bushing, Drill &amp; Tube Reference</h1>
+    <p class="dek">Every current Penn State Industries pen/pencil kit, cross-referenced against the bushing set, drill size, and tube/barrel length it needs &mdash; built by scraping PSI's product pages and instruction sheets directly (the official Bushing Book PDF is out of date and missing kits, e.g. <code>PKJ316CH</code>). Includes batch views to group kits sharing a drill size or tube length, for planning blank prep.</p>
     <div class="stat-strip">
       <div class="stat"><span class="n mono" id="stat-designs">&mdash;</span><span class="l">Kit designs</span></div>
       <div class="stat"><span class="n mono" id="stat-skus">&mdash;</span><span class="l">Individual SKUs</span></div>
@@ -358,9 +369,11 @@ footer.page-foot {
       <button class="tab" role="tab" data-view="design" aria-selected="true">By Kit Design</button>
       <button class="tab" role="tab" data-view="flat" aria-selected="false">By Exact SKU</button>
       <button class="tab" role="tab" data-view="reverse" aria-selected="false">By Bushing Set</button>
+      <button class="tab" role="tab" data-view="drill" aria-selected="false">By Drill Size</button>
+      <button class="tab" role="tab" data-view="tube" aria-selected="false">By Tube Length</button>
     </div>
     <div class="search-box">
-      <input type="search" id="search" placeholder="Search kit, SKU, or bushing ID&hellip;" autocomplete="off">
+      <input type="search" id="search" placeholder="Search kit, SKU, bushing, drill, or tube length&hellip;" autocomplete="off">
     </div>
     <div class="count-note" id="count-note"></div>
   </div>
@@ -383,7 +396,10 @@ footer.page-foot {
     <div class="notes-body">
       <p><strong>Source:</strong> live-scraped from every product page under pennstateind.com's pen-kits category (each page's own "Bushings Needed" field is authoritative here, not the printed Bushing Book).</p>
       <p><strong>"By Kit Design" grouping:</strong> the raw SKU list includes one page per color/finish variant of the same physical kit (e.g. Chrome, Gun Metal, Antique Brass). Starter-set/variety-pack/bundle SKUs and one mislabeled bushing-set product (<code>PKOLIVEBU</code>) are excluded first. The remaining individual kit SKUs are grouped into designs by stripping known finish/plating words (Chrome, Gun Metal, Antique Brass, 24kt Gold, Satin Nickel, etc.) from the title and grouping by the remaining name + bushing set. This is a best-effort heuristic against inconsistent title formatting &mdash; if you need certainty for a specific kit, cross-check it in the "By Exact SKU" view, which does no grouping at all.</p>
-      <p><strong>"Not listed by PSI":</strong> these kits have no "Bushings Needed" field on their own product page at all &mdash; not a scraping gap, confirmed by direct inspection. Rather than guess, they're flagged as-is.</p>
+      <p><strong>"Not listed by PSI":</strong> these kits have no "Bushings Needed" (or "Drill Sizes Used") field on their own product page at all &mdash; not a scraping gap, confirmed by direct inspection. Rather than guess, they're flagged as-is.</p>
+      <p><strong>Drill size</strong> comes straight from each product page's own "Drill Sizes Used" field, same as bushings &mdash; reliable.</p>
+      <p><strong>Tube length</strong> is <em>not</em> published anywhere in the HTML. It only exists as a dimension inside each kit's PDF instruction sheet, and neither the wording nor the layout of that dimension is consistent across kit families, so it's extracted with a best-effort heuristic (matching diagram text to nearby numbers by position on the page), backed by a small hand-checked list for kits that heuristic couldn't resolve. "not extracted" means the value is genuinely in that kit's instruction PDF but neither of those could pull it out reliably &mdash; a few sheets have labels baked into vector artwork instead of real text, or duplicated/corrupted text layers, that defeat automated and manual reading alike. Check the PDF directly (linked from the product page) if you need one of these.</p>
+      <p><strong>"By Drill Size" and "By Tube Length"</strong> are reverse lookups like "By Bushing Set" &mdash; find everything that shares a setup, to cut down on tool changeovers when batching blank prep. A kit with two different-length tubes (e.g. cap and barrel) appears under both lengths, since you need blanks cut for each.</p>
       <p>See the <a href="https://github.com/WWE-Corey/psi-bushing-lookup#readme">README</a> for how to re-run the scrape and regenerate this page.</p>
     </div>
   </details>
@@ -415,28 +431,56 @@ function bushingCell(ids) {
   return ids.map(id => `<span class="chip">${id}</span>`).join('');
 }
 
+function drillCell(sizes) {
+  if (!sizes || sizes.length === 0) return '<span class="flag">Not listed by PSI</span>';
+  return sizes.map(s => `<span class="chip">${s}</span>`).join('');
+}
+
+// Upper/Lower/etc modifier, if the label has one, shown as a small suffix
+// so a kit with two differently-sized tubes doesn't read as ambiguous.
+function tubeLabelSuffix(label) {
+  const m = label.match(/^(Upper|Lower|Front|Back|Top|Bottom)\b/);
+  return m ? ` <span class="sku-inline">${m[1]}</span>` : '';
+}
+function tubeCell(tubes) {
+  // Distinct from bushingCell/drillCell's "Not listed by PSI": PSI does
+  // publish this (in the instruction-sheet diagram), we just couldn't
+  // reliably parse it out of that particular sheet -- see the Methodology
+  // note. Different meaning, so it gets different wording, not the flag style.
+  if (!tubes || tubes.length === 0) return '<span class="cat">not extracted</span>';
+  return tubes.map(t => `<span class="chip mono">${t.v}${tubeLabelSuffix(t.l)}</span>`).join(' ');
+}
+
 const views = {
   design: {
-    head: ['Kit design', 'Bushing set', 'SKUs', 'Category'],
+    head: ['Kit design', 'Bushing set', 'Drill size', 'Tube length', 'SKUs', 'Category'],
     rows: () => DATA.designs,
     render: r => `
       <td class="name">${r.d}${r.n > 1 ? `<span class="sku-count">${r.n} colors</span>` : ''}</td>
       <td>${bushingCell(r.b)}</td>
+      <td>${drillCell(r.dr)}</td>
+      <td>${tubeCell(r.tu)}</td>
       <td class="skus mono">${r.s.join(', ')}</td>
       <td class="cat">${r.c}</td>
     `,
-    match: (r, q) => r.d.toLowerCase().includes(q) || r.s.some(s => s.toLowerCase().includes(q)) || r.b.some(b => b.toLowerCase().includes(q)),
+    match: (r, q) => r.d.toLowerCase().includes(q) || r.s.some(s => s.toLowerCase().includes(q)) ||
+      r.b.some(b => b.toLowerCase().includes(q)) || r.dr.some(d => d.toLowerCase().includes(q)) ||
+      r.tu.some(t => t.v.toLowerCase().includes(q)),
   },
   flat: {
-    head: ['SKU', 'Title', 'Bushing set', 'Category'],
+    head: ['SKU', 'Title', 'Bushing set', 'Drill size', 'Tube length', 'Category'],
     rows: () => DATA.flat,
     render: r => `
       <td class="name mono">${r.k}</td>
       <td>${r.t}</td>
       <td>${bushingCell(r.b)}</td>
+      <td>${drillCell(r.dr)}</td>
+      <td>${tubeCell(r.tu)}</td>
       <td class="cat">${r.c}</td>
     `,
-    match: (r, q) => r.k.toLowerCase().includes(q) || r.t.toLowerCase().includes(q) || r.b.some(b => b.toLowerCase().includes(q)),
+    match: (r, q) => r.k.toLowerCase().includes(q) || r.t.toLowerCase().includes(q) ||
+      r.b.some(b => b.toLowerCase().includes(q)) || r.dr.some(d => d.toLowerCase().includes(q)) ||
+      r.tu.some(t => t.v.toLowerCase().includes(q)),
   },
   reverse: {
     head: ['Bushing set', 'Used by kit designs'],
@@ -446,6 +490,26 @@ const views = {
       <td>${r.designs.map(d => `${d.d}${d.s && d.s.length ? ` <span class="sku-inline">(${d.s.join(', ')})</span>` : ''}`).join(', ')}</td>
     `,
     match: (r, q) => r.b.toLowerCase().includes(q) ||
+      r.designs.some(d => d.d.toLowerCase().includes(q) || d.s.some(s => s.toLowerCase().includes(q))),
+  },
+  drill: {
+    head: ['Drill size', 'Used by kit designs'],
+    rows: () => DATA.reverse_drill,
+    render: r => `
+      <td class="name mono">${r.drill}</td>
+      <td>${r.designs.map(d => `${d.d}${d.s && d.s.length ? ` <span class="sku-inline">(${d.s.join(', ')})</span>` : ''}`).join(', ')}</td>
+    `,
+    match: (r, q) => r.drill.toLowerCase().includes(q) ||
+      r.designs.some(d => d.d.toLowerCase().includes(q) || d.s.some(s => s.toLowerCase().includes(q))),
+  },
+  tube: {
+    head: ['Tube length', 'Used by kit designs'],
+    rows: () => DATA.reverse_tube,
+    render: r => `
+      <td class="name mono">${r.v}</td>
+      <td>${r.designs.map(d => `${d.d}${d.s && d.s.length ? ` <span class="sku-inline">(${d.s.join(', ')})</span>` : ''}`).join(', ')}</td>
+    `,
+    match: (r, q) => r.v.toLowerCase().includes(q) ||
       r.designs.some(d => d.d.toLowerCase().includes(q) || d.s.some(s => s.toLowerCase().includes(q))),
   },
 };

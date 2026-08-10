@@ -1,0 +1,55 @@
+{
+  "_readme": "Manual fill-ins for tube/barrel length where 03_fetch_instructions.py's automated PDF parse couldn't resolve it reliably. Keyed by lowercased instructions_pdf path (matches scraped_raw.json / instructions_raw.json). Each entry is read by hand from the kit's own instruction PDF (linked from its PSI product page) -- see README for how to add more. 04_process.py only applies an override when the automated parse found nothing, so it never overrides a real (even if imperfect) auto-extracted value.",
+  "/library/pkchpen_ins.pdf": [
+    {"label": "Tube", "raw": "2 1/8\"", "inches": 2.125}
+  ],
+  "/library/pkckxx_ins.pdf": [
+    {"label": "Tube", "raw": "2.96\"", "inches": 2.96}
+  ],
+  "/library/pkcwpenxx_ins.pdf": [
+    {"label": "Tube", "raw": "2-7/8\"", "inches": 2.875}
+  ],
+  "/library/pkdraxx_ins.pdf": [
+    {"label": "Front Tube", "raw": "1.45\"", "inches": 1.45},
+    {"label": "Upper Tube", "raw": "1.65\"", "inches": 1.65}
+  ],
+  "/library/pkfp50xx_ins.pdf": [
+    {"label": "Tube", "raw": "2 3/8\"", "inches": 2.375}
+  ],
+  "/library/pkmont2xx_ins.pdf": [
+    {"label": "Upper Tube", "raw": "2 1/32\"", "inches": 2.03125},
+    {"label": "Lower Tube", "raw": "2 3/8\"", "inches": 2.375}
+  ],
+  "/library/pkmont_ins.pdf": [
+    {"label": "Upper Tube", "raw": "2-1/8\"", "inches": 2.125},
+    {"label": "Lower Tube", "raw": "2-3/8\"", "inches": 2.375}
+  ],
+  "/library/pkmtminxx_ins.pdf": [
+    {"label": "Upper Tube", "raw": "1-1/2\"", "inches": 1.5},
+    {"label": "Lower Tube", "raw": "1-11/16\"", "inches": 1.6875}
+  ],
+  "/library/pkpatpen24xx_ins.pdf": [
+    {"label": "Tube", "raw": "1 15/32\"", "inches": 1.46875}
+  ],
+  "/library/pkpatxx_ins.pdf": [
+    {"label": "Tube", "raw": "1 15/32\"", "inches": 1.46875}
+  ],
+  "/library/pkspcl_ins.pdf": [
+    {"label": "Tube", "raw": "1.776\"", "inches": 1.776}
+  ],
+  "/library/pkspxx_ins.pdf": [
+    {"label": "Tube / Barrel", "raw": "1.85\"", "inches": 1.85}
+  ],
+  "/library/pkteach_ins.pdf": [
+    {"label": "End Tube", "raw": "13/16\"", "inches": 0.8125},
+    {"label": "Center Tube", "raw": "2-3/16\"", "inches": 2.1875}
+  ],
+  "/library/pkwestxx_ins.pdf": [
+    {"label": "Lower Tube", "raw": "1.42\"", "inches": 1.42},
+    {"label": "Upper Tube", "raw": "1.7\"", "inches": 1.7}
+  ],
+  "/library/pkyogaxx_ins.pdf": [
+    {"label": "Lower Tube", "raw": "1.954\"", "inches": 1.954},
+    {"label": "Upper Tube", "raw": "1.49\"", "inches": 1.49}
+  ]
+}
