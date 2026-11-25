@@ -88,6 +88,20 @@ def main():
 
     print(f"done in {time.time()-t0:.0f}s. ok={len(results)} errors={len(errors)}")
 
+    # Never drop a kit just because PSI stopped listing it: people still own
+    # discontinued kits/bushings. Carry forward every previously scraped kit
+    # that's missing from this scrape and flag it discontinued; a kit that
+    # reappears gets the flag cleared automatically (fresh scrape wins).
+    if OUT_PATH.exists():
+        seen = {r["kit_id"] for r in results}
+        carried = 0
+        for old in json.loads(OUT_PATH.read_text()).get("results", []):
+            if old["kit_id"] not in seen:
+                old["discontinued"] = True
+                results.append(old)
+                carried += 1
+        print(f"carried forward {carried} kits no longer listed by PSI (flagged discontinued)")
+
     scraped_at = datetime.now(timezone.utc).date().isoformat()
     OUT_PATH.write_text(json.dumps({"scraped_at": scraped_at, "results": results, "errors": errors}))
     print(f"wrote {OUT_PATH}")

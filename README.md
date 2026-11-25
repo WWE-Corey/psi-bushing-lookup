@@ -52,6 +52,8 @@ python3 scripts/05_build_html.py
 
 ## Caveats
 
+- **Discontinued kits are kept, never dropped.** Steps 2 and 3 merge into the previous snapshot: any kit PSI no longer lists is carried forward and flagged `discontinued` (shown as a badge on the page, and in the `Status` / `Discontinued SKUs` CSV columns). Don't delete `data/scraped_raw.json` or `data/instructions_raw.json` before re-scraping, or that history is lost (it's also in git).
+
 - **Grouping is a heuristic.** Color/finish words don't sit in a consistent position in PSI's titles (sometimes trailing "...Pen Kit in Chrome", sometimes mid-title "Astra Golden Twist Pen Kit"), so the finish-word list in `04_process.py` is curated from a word-frequency pass over real titles, not exhaustive by construction. If a kit's design grouping looks wrong, check it against the **By Exact SKU** view, which never groups anything.
 - **"Not listed by PSI"** (bushings, drill size) means the kit's own product page has no such field at all — confirmed by direct inspection, not a scraping failure. A handful of kits (mostly Protura and Pool Cue Chalk Holder variants) are like this on PSI's site itself.
 - **"not extracted"** (tube length only) means something different: PSI *does* publish this value, inside the kit's instruction PDF, but the extraction heuristic in `03_fetch_instructions.py` couldn't pull it out reliably from that particular sheet's layout. It's a gap in this tool, not in PSI's data — check the instruction PDF directly (linked from the product page) if you need it for one of these kits.

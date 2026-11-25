@@ -456,7 +456,7 @@ const views = {
     head: ['Kit design', 'Bushing set', 'Drill size', 'Tube length', 'SKUs', 'Category'],
     rows: () => DATA.designs,
     render: r => `
-      <td class="name">${r.d}${r.n > 1 ? `<span class="sku-count">${r.n} colors</span>` : ''}</td>
+      <td class="name">${r.d}${r.n > 1 ? `<span class="sku-count">${r.n} colors</span>` : ''}${r.x && r.x.length ? `<span class="sku-count">${r.x.length === r.n ? 'discontinued' : r.x.length + ' discontinued: ' + r.x.join(', ')}</span>` : ''}</td>
       <td>${bushingCell(r.b)}</td>
       <td>${drillCell(r.dr)}</td>
       <td>${tubeCell(r.tu)}</td>
@@ -472,7 +472,7 @@ const views = {
     rows: () => DATA.flat,
     render: r => `
       <td class="name mono">${r.k}</td>
-      <td>${r.t}</td>
+      <td>${r.t}${r.x ? '<span class="sku-count">discontinued</span>' : ''}</td>
       <td>${bushingCell(r.b)}</td>
       <td>${drillCell(r.dr)}</td>
       <td>${tubeCell(r.tu)}</td>

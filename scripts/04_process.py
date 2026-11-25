@@ -90,7 +90,7 @@ FINISH_PHRASES = [
     "Antique Brass", "Antique Pewter", "Antique Copper", "Antique Nickel", "Antique Bronze",
     "Brushed Nickel", "Brushed Chrome", "Brushed Gold",
     "Rose Gold", "24kt Gold", "22kt Gold", "14kt Gold",
-    "Gun Metal", "Gunmetal",
+    "Gold TN", "Gun Metal", "Gunmetal",
     "Stainless Steel",
     "Chrome", "Golden", "Gold", "Brass", "Pewter", "Copper", "Nickel",
     "Titanium", "Rhodium", "Platinum", "Bronze", "Aluminum", "Steel", "Black",
@@ -101,7 +101,8 @@ FINISH_RE = re.compile(r"\b(" + "|".join(re.escape(p) for p in FINISH_PHRASES) +
 def clean_design_name(title):
     t = FINISH_RE.sub("", title)
     t = re.sub(r"\bin\b", "", t, flags=re.I)
-    t = re.sub(r"\bwith\b\s*$", "", t, flags=re.I)
+    t = re.sub(r"\b(with|and)\b\s*$", "", t, flags=re.I)
+    t = re.sub(r"\band\b\s*(?=(Pen|Pencil)\b)", "", t, flags=re.I)
     t = re.sub(r"\s+", " ", t).strip(" -,")
     return t
 
@@ -203,6 +204,7 @@ def main():
             "bushing_ids": [b for b in bushing_key if b != "__NONE__"],
             "sku_count": len(members),
             "skus": sorted(m["kit_id"] for m in members),
+            "discontinued_skus": sorted(m["kit_id"] for m in members if m.get("discontinued")),
             "category": members[0]["category"],
             "drill_sizes": sorted({d for m in members for d in m["drill_sizes"]}),
             "tubes": dedupe_tubes(m["tubes"] for m in members),
@@ -227,9 +229,11 @@ def main():
     # reverse index used by the "By Bushing Set" view.
     designs_c = [{"d": r["design"], "b": r["bushing_ids"], "n": r["sku_count"],
                   "s": r["skus"], "c": r["category"],
-                  "dr": r["drill_sizes"], "tu": tubes_c(r["tubes"])} for r in design_rows]
+                  "dr": r["drill_sizes"], "tu": tubes_c(r["tubes"]),
+                  "x": r["discontinued_skus"]} for r in design_rows]
     flat_c = [{"k": r["kit_id"], "t": r["title"], "b": r["bushings"], "c": r["category"],
-               "dr": r["drill_sizes"], "tu": tubes_c(r["tubes"])}
+               "dr": r["drill_sizes"], "tu": tubes_c(r["tubes"]),
+               "x": 1 if r.get("discontinued") else 0}
               for r in kept]
 
     rev = defaultdict(list)
@@ -277,18 +281,20 @@ def main():
     OUTPUT_DIR.mkdir(exist_ok=True)
     with open(OUTPUT_DIR / "pen_kit_bushing_by_design.csv", "w", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["Design", "Bushing IDs", "SKU Count", "SKUs", "Category", "Drill Size(s)", "Tube Length(s)"])
+        w.writerow(["Design", "Bushing IDs", "SKU Count", "SKUs", "Category", "Drill Size(s)", "Tube Length(s)", "Discontinued SKUs"])
         for r in design_rows:
             w.writerow([r["design"], ";".join(r["bushing_ids"]) or "NOT LISTED",
                         r["sku_count"], ";".join(r["skus"]), r["category"],
-                        ";".join(r["drill_sizes"]) or "NOT LISTED", tubes_csv(r["tubes"])])
+                        ";".join(r["drill_sizes"]) or "NOT LISTED", tubes_csv(r["tubes"]),
+                        ";".join(r["discontinued_skus"])])
 
     with open(OUTPUT_DIR / "pen_kit_bushing_flat.csv", "w", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["Kit ID", "Title", "Bushing IDs", "Category", "Drill Size(s)", "Tube Length(s)"])
+        w.writerow(["Kit ID", "Title", "Bushing IDs", "Category", "Drill Size(s)", "Tube Length(s)", "Status"])
         for r in kept:
             w.writerow([r["kit_id"], r["title"], ";".join(r["bushings"]) or "NOT LISTED",
-                        r["category"], ";".join(r["drill_sizes"]) or "NOT LISTED", tubes_csv(r["tubes"])])
+                        r["category"], ";".join(r["drill_sizes"]) or "NOT LISTED", tubes_csv(r["tubes"]),
+                        "Discontinued" if r.get("discontinued") else "Current"])
 
     print(f"wrote CSVs to {OUTPUT_DIR}")
 

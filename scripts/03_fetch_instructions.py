@@ -274,6 +274,12 @@ def main():
 
     print(f"done in {time.time()-t0:.0f}s. ok={len(results)} errors={len(errors)}")
 
+    # Keep instruction-sheet data for carried-forward discontinued kits whose
+    # PDF is no longer linked (or no longer fetchable) -- never lose it.
+    if OUT_PATH.exists():
+        for k, v in json.loads(OUT_PATH.read_text()).get("results", {}).items():
+            results.setdefault(k, v)
+
     resolved = sum(1 for r in results.values() if r["tubes"])
     print(f"tube length resolved: {resolved}/{len(results)}")
 
